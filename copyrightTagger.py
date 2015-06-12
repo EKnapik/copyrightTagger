@@ -306,9 +306,9 @@ def tagSentence( sentence, transMatrix, dictionary ):
 						sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
 			else: # This is essentially a degenerative pass through. It is .5 essentially a flip of a coin
 				if transMatrix[getTagIndex(bestTag)][getTagIndex('nn')] >= .25:  # is it likelly to be a noun
-					sentenceMatrix[getTagIndex('nn')][wordIndex+1] = .5
+					sentenceMatrix[getTagIndex('nn')][wordIndex+1] = .35
 				elif transMatrix[getTagIndex(bestTag)][getTagIndex('np')] >= .25:
-					sentenceMatrix[getTagIndex('np')][wordIndex+1] = .5
+					sentenceMatrix[getTagIndex('np')][wordIndex+1] = .35
 				else:
 					sentenceMatrix[tagIndex][wordIndex+1] = bestProb
 	# THE MATRIX IS CREATED.... I Think I am not in the best states of mind while I am writing this
@@ -326,17 +326,26 @@ def tagSentence( sentence, transMatrix, dictionary ):
 				tagProb = sentenceMatrix[tagIndex][wordIndex+1]
 				tag = getTagStr( tagIndex )
 		finalSentence = finalSentence + sentence[wordIndex] + '|~|' + tag + '   '
-	print( finalSentence )
+	return finalSentence
 
 
 
 
 
-"""
-Given a sentence this will split it into tokens propperly and return a string
-If specific words have not been seen before and the db of transitionMatrix of
-the word is greater than .5 then add it to the dictionary given that tag
-"""
+def tagFile( filename, transMatrix, dictionary ):
+
+	# firstly transform the file into something that I want, cause
+	# files are hard to guarentee conformity and actually what I want
+	inSent = ''
+	for line in open( filename ):
+		line = line.strip()
+		line = line.split()
+		for word in line:
+			inSent = inSent + word + " "
+
+	outSent = tagSentence( inSent, transMatrix, dictionary )
+	outfile = open( (filename + '.out'), 'w' )
+	outfile.write( outSent )
 
 
 
@@ -391,18 +400,27 @@ def readCorpus():
 			# floating point numbers, abbreviated buisnesses will cause problems
 			#if prevTag == '.':
 			#	prevTag = 'bos'
+	for line in open( "copyrightCorpus2.in" ):
+		line = line.strip()
+		line = line.split()
+		for word in line:
+			word = word.split( '|~|' )
+			currTag = word[1]
+			# add the current word to the unigram dictionary (single word probability)
+			dictionary = incrementUnigramWord( dictionary, word[0], currTag )
+			# add the current tag transition to the transition matrix
+			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
+			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
 
 	dictionary = convertDictionaryToProb( dictionary )
 	transMatrix = convertTransMatrixToProb( transMatrix )
 
 	# this should just be given a sentence will do the probability and only do look ups
 	# it should not infer or have to worry about spliting the sentence and infering
-	tagSentence( 'Copyright (c) 2009-2012 Hewlett-Packard Development Company, L.', transMatrix, dictionary)
-	tagSentence( 'P. This library is free software; you can redistribute it and/or modify it under \
-		         the terms of the MIT license.', transMatrix, dictionary )
-	tagSentence( 'See COPYING for details.', transMatrix, dictionary )
+	taggedSentence = tagSentence( 'Copyright (C) 2002, 2003, 2005, 2006, 2007, 2008  Free Software Foundation, Inc.', transMatrix, dictionary)
+	print( taggedSentence )
 
-	print( str( transMatrix[getTagIndex('.')][getTagIndex('nn')]))
+	tagFile( 'rawCopyright2', transMatrix, dictionary )
 
 readCorpus()
 
