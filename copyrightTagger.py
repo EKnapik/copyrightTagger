@@ -281,7 +281,7 @@ or an array of char*
 def tagSentence( sentence, transMatrix, dictionary ):
 	sentence = sentence.strip()
 	
-	# INSERT REGULAR EXPRESSION HERE TO ADD TO SPACE SENTENCE PROPPERLY
+	sentence = re.sub("([.,!\[\]</\\>|;\"\':()*+=\-_@#$%^&?])+", r" \1 ", sentence) # regex to add needed spaces
 	sentence = sentence.split()
 
 	sentLength = len( sentence ) + 1       # I need one for the base beginning of sentence part
@@ -289,11 +289,11 @@ def tagSentence( sentence, transMatrix, dictionary ):
 	# above is the sentence array initialization
 
 	# Initialize the first
-	sentenceMatrix[getTagIndex('bos')][0] = 1.0     # the max probablity something can be
+	sentenceMatrix[getTagIndex('.')][0] = 1.0     # the max probablity something can be
 	for wordIndex in range( len( sentence ) ):
 		for tagIndex in range( getNumTags() ):
-			bestProb = 0
-			bestTag = 'bos'
+			bestProb = 0.0
+			bestTag = '.'
 			for someTagIndex in range( getNumTags() ):
 				# the probability of the previous * the transition from previoius to current
 				possibleMaxProb = sentenceMatrix[someTagIndex][wordIndex] * transMatrix[someTagIndex][tagIndex]
@@ -306,18 +306,18 @@ def tagSentence( sentence, transMatrix, dictionary ):
 						sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
 			else: # This is essentially a degenerative pass through. It is .5 essentially a flip of a coin
 				if transMatrix[getTagIndex(bestTag)][getTagIndex('nn')] >= .25:  # is it likelly to be a noun
-					sentenceMatrix[getTagIndex('nn')][wordIndex+1] = bestProb
+					sentenceMatrix[getTagIndex('nn')][wordIndex+1] = .5
 				elif transMatrix[getTagIndex(bestTag)][getTagIndex('np')] >= .25:
-					sentenceMatrix[getTagIndex('np')][wordIndex+1] = bestProb
+					sentenceMatrix[getTagIndex('np')][wordIndex+1] = .5
 				else:
-					sentenceMatrix[tagIndex][wordIndex+1] = bestProb * .5
+					sentenceMatrix[tagIndex][wordIndex+1] = bestProb
 	# THE MATRIX IS CREATED.... I Think I am not in the best states of mind while I am writing this
 	# I'll do some checks to see if this works I really don't want to work right now
 	# The operations above are on the order of number of tags squared times the number of words in the sentence
 	# less than N cubbed but not by much and very memory inefficient lots of null places or 0s in the matrix
 
 	# Now go back through the matrix setting the POS for each word to be the max probability given the sentence matrix
-	finalSentence = '|~|bos   '
+	finalSentence = ''
 	for wordIndex in range( len( sentence ) ):
 		tag = ''
 		tagProb = 0
@@ -371,7 +371,7 @@ def readCorpus():
 	transMatrix = mkTransMatrix( getNumTags() )
 
 	# I need some variables
-	prevTag = 'bos'
+	prevTag = '.'
 	currTag = ''
 
 	for line in open( "copyrightCorpus1.in" ):
@@ -397,9 +397,12 @@ def readCorpus():
 
 	# this should just be given a sentence will do the probability and only do look ups
 	# it should not infer or have to worry about spliting the sentence and infering
-	tagSentence( 'Copyright 2009 , Tad Hunt', transMatrix, dictionary)
+	tagSentence( 'Copyright (c) 2009-2012 Hewlett-Packard Development Company, L.', transMatrix, dictionary)
+	tagSentence( 'P. This library is free software; you can redistribute it and/or modify it under \
+		         the terms of the MIT license.', transMatrix, dictionary )
+	tagSentence( 'See COPYING for details.', transMatrix, dictionary )
 
-
+	print( str( transMatrix[getTagIndex('.')][getTagIndex('nn')]))
 
 readCorpus()
 
