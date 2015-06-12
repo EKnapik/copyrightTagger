@@ -315,6 +315,15 @@ def tagSentence( sentence, transMatrix, dictionary ):
 
 
 
+
+
+"""
+Given a sentence this will split it into tokens propperly and return a string
+If specific words have not been seen before and the db of transitionMatrix of
+the word is greater than .5 then add it to the dictionary given that tag
+"""
+
+
 """
 Sanity check
 Check is good
@@ -370,7 +379,9 @@ def readCorpus():
 	dictionary = convertDictionaryToProb( dictionary )
 	transMatrix = convertTransMatrixToProb( transMatrix )
 
-	tagSentence( 'Copyright ( c ) 2001 GNU', transMatrix, dictionary)
+	# this should just be given a sentence will do the probability and only do look ups
+	# it should not infer or have to worry about spliting the sentence and infering
+	tagSentence( , transMatrix, dictionary)
 
 
 
