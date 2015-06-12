@@ -1,3 +1,6 @@
+import re
+
+
 """
 Define my transition matrix given the size
 This makes a square matrix with the values initialized to 0
@@ -167,7 +170,7 @@ def getTagStr( POSIndex ):
 	elif POSIndex == 25:
 		return 'in'
 	else:
-		print( "UNKNOWN TAG IS: ", POSIndex)
+		print( "UNKNOWN INDEx IS: ", POSIndex)
 
 
 """
@@ -277,7 +280,10 @@ or an array of char*
 """
 def tagSentence( sentence, transMatrix, dictionary ):
 	sentence = sentence.strip()
+	
+	# INSERT REGULAR EXPRESSION HERE TO ADD TO SPACE SENTENCE PROPPERLY
 	sentence = sentence.split()
+
 	sentLength = len( sentence ) + 1       # I need one for the base beginning of sentence part
 	sentenceMatrix = [[0 for x in range(sentLength)] for x in range(getNumTags())]
 	# above is the sentence array initialization
@@ -287,15 +293,24 @@ def tagSentence( sentence, transMatrix, dictionary ):
 	for wordIndex in range( len( sentence ) ):
 		for tagIndex in range( getNumTags() ):
 			bestProb = 0
+			bestTag = 'bos'
 			for someTagIndex in range( getNumTags() ):
 				# the probability of the previous * the transition from previoius to current
 				possibleMaxProb = sentenceMatrix[someTagIndex][wordIndex] * transMatrix[someTagIndex][tagIndex]
 				if possibleMaxProb > bestProb:
 					bestProb = possibleMaxProb
-
-			for tagObject in dictionary[sentence[wordIndex]]:
-				if getTagStr( tagIndex ) == tagObject.tag:
-					sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
+					bestTag = getTagStr( someTagIndex )
+			if sentence[wordIndex] in dictionary.keys():
+				for tagObject in dictionary[sentence[wordIndex]]:
+					if getTagStr( tagIndex ) == tagObject.tag:
+						sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
+			else: # This is essentially a degenerative pass through. It is .5 essentially a flip of a coin
+				if transMatrix[getTagIndex(bestTag)][getTagIndex('nn')] >= .25:  # is it likelly to be a noun
+					sentenceMatrix[getTagIndex('nn')][wordIndex+1] = bestProb
+				elif transMatrix[getTagIndex(bestTag)][getTagIndex('np')] >= .25:
+					sentenceMatrix[getTagIndex('np')][wordIndex+1] = bestProb
+				else:
+					sentenceMatrix[tagIndex][wordIndex+1] = bestProb * .5
 	# THE MATRIX IS CREATED.... I Think I am not in the best states of mind while I am writing this
 	# I'll do some checks to see if this works I really don't want to work right now
 	# The operations above are on the order of number of tags squared times the number of words in the sentence
@@ -322,6 +337,7 @@ Given a sentence this will split it into tokens propperly and return a string
 If specific words have not been seen before and the db of transitionMatrix of
 the word is greater than .5 then add it to the dictionary given that tag
 """
+
 
 
 """
@@ -373,15 +389,15 @@ def readCorpus():
 			# so this is extremely naive because of the other things that the period could mean
 			# all I am doing now is for every instance of a period I consider it to be a new sentence
 			# floating point numbers, abbreviated buisnesses will cause problems
-			if prevTag == '.':
-				prevTag = 'bos'
+			#if prevTag == '.':
+			#	prevTag = 'bos'
 
 	dictionary = convertDictionaryToProb( dictionary )
 	transMatrix = convertTransMatrixToProb( transMatrix )
 
 	# this should just be given a sentence will do the probability and only do look ups
 	# it should not infer or have to worry about spliting the sentence and infering
-	tagSentence( , transMatrix, dictionary)
+	tagSentence( 'Copyright 2009 , Tad Hunt', transMatrix, dictionary)
 
 
 
