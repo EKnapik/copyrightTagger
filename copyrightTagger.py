@@ -319,15 +319,20 @@ def tagSentence( sentence, transMatrix, dictionary ):
 					for tagObject in dictionary[sentence[wordIndex]]:
 						if getTagStr( tagIndex ) == tagObject.tag:
 							sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
+			# perform a check not caring about the capitalization
+			elif sentence[wordIndex].lower() in dictionary.keys():
+				for tagObject in dictionary[sentence[wordIndex].lower()]:
+						if getTagStr( tagIndex ) == tagObject.tag:
+							sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
 			else: # Try to determine the part of speech depending on the word itself
-				# if I am 25% sure of a pos based on transition use that transition else use
+				# if I am 70% sure of a pos based on transition use that transition else use
 				# the rule based one. I might be able to increase that transition with a
 				# larger corpus
-				if bestTrans >= .25:
+				if bestTrans >= 0.7:
 					sentenceMatrix[tagIndex][wordIndex+1] = bestProb
 				else:
 					likelyTag = tagUnknown( sentence[wordIndex] )
-					sentenceMatrix[getTagIndex(likelyTag)][wordIndex+1] = bestProb * .95
+					sentenceMatrix[getTagIndex(likelyTag)][wordIndex+1] = bestProb * 0.95
 
 				"""
 				if transMatrix[getTagIndex(bestTag)][getTagIndex('nn')] >= .25:  # is it likelly to be a noun
@@ -431,7 +436,7 @@ def tagUnknown( word ):
 
 	# if the first letter is capitalized its probably a propper noun
 	# I want to do this check late to not prioritize capitalization
-	if word[0].isupper():
+	if word[0].isupper() and word[1:].islowwer():
 		return 'np'
 	# if I can not figure it out then its a foreign word.
 	return 'fw'
@@ -516,6 +521,30 @@ def readCorpus():
 			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
 			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
 
+	for line in open( "copyrightCorpus4.in" ):
+		line = line.strip()
+		line = line.split()
+		for word in line:
+			word = word.split( '|~|' )
+			currTag = word[1]
+			# add the current word to the unigram dictionary (single word probability)
+			dictionary = incrementUnigramWord( dictionary, word[0], currTag )
+			# add the current tag transition to the transition matrix
+			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
+			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
+
+	for line in open( "copyrightCorpus5.in" ):
+		line = line.strip()
+		line = line.split()
+		for word in line:
+			word = word.split( '|~|' )
+			currTag = word[1]
+			# add the current word to the unigram dictionary (single word probability)
+			dictionary = incrementUnigramWord( dictionary, word[0], currTag )
+			# add the current tag transition to the transition matrix
+			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
+			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
+
 	dictionary = convertDictionaryToProb( dictionary )
 	transMatrix = convertTransMatrixToProb( transMatrix )
 
@@ -524,7 +553,9 @@ def readCorpus():
 	#taggedSentence = tagSentence( 'This file is part of GnuPG. Copyright 1589, Tad Masters Hunt.', transMatrix, dictionary)
 	#print( taggedSentence )
 
-	tagFile( 'rawCopyright2', transMatrix, dictionary )
+	print( transMatrix[getTagIndex('cd')][getTagIndex(',')] )
+
+	tagFile( 'rawCopyright', transMatrix, dictionary )
 
 readCorpus()
 
