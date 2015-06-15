@@ -288,7 +288,7 @@ or an array of char*
 def tagSentence( sentence, transMatrix, dictionary ):
 	sentence = sentence.strip()
 	
-	sentence = re.sub("([.,!\[\]</\\>|;\"\':()*+=\-_@#$%^&?])+", r" \1 ", sentence) # regex to add needed spaces
+	sentence = re.sub("([.,!\[\]</\\>|;\"\':()*`~+=\-_@#$%^&?])+", r" \1 ", sentence) # regex to add needed spaces
 	sentence = sentence.split()
 
 	sentLength = len( sentence ) + 1       # I need one for the base beginning of sentence part
@@ -301,19 +301,33 @@ def tagSentence( sentence, transMatrix, dictionary ):
 		for tagIndex in range( getNumTags() ):
 			bestProb = 0.0
 			bestTag = '.'
+			bestTrans = 0.0
 			for someTagIndex in range( getNumTags() ):
 				# the probability of the previous * the transition from previoius to current
 				possibleMaxProb = sentenceMatrix[someTagIndex][wordIndex] * transMatrix[someTagIndex][tagIndex]
 				if possibleMaxProb > bestProb:
 					bestProb = possibleMaxProb
 					bestTag = getTagStr( someTagIndex )
-			if sentence[wordIndex] in dictionary.keys():
-				for tagObject in dictionary[sentence[wordIndex]]:
-					if getTagStr( tagIndex ) == tagObject.tag:
-						sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
+					bestTrans = transMatrix[someTagIndex][tagIndex]
+			if sentence[wordIndex] in dictionary.keys():   # word has been seen before.
+				# with large sentences the potential proability drops to 0 over because of the
+				# transitional algorithm I need to boost the signal every time the sentence ends
+				# or split the sentence at periods which could be less dangerous than the boosting of signal
+				if sentence[wordIndex] == '.' or sentence[wordIndex] == '?' or sentence[wordIndex] == '!':
+					sentenceMatrix[getTagIndex('.')][wordIndex+1] = 1.0
+				else:
+					for tagObject in dictionary[sentence[wordIndex]]:
+						if getTagStr( tagIndex ) == tagObject.tag:
+							sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
 			else: # Try to determine the part of speech depending on the word itself
-				likelyTag = tagUnknown( sentence[wordIndex] )
-				sentenceMatrix[getTagIndex(likelyTag)][wordIndex+1] = bestProb
+				# if I am 25% sure of a pos based on transition use that transition else use
+				# the rule based one. I might be able to increase that transition with a
+				# larger corpus
+				if bestTrans >= .25:
+					sentenceMatrix[tagIndex][wordIndex+1] = bestProb
+				else:
+					likelyTag = tagUnknown( sentence[wordIndex] )
+					sentenceMatrix[getTagIndex(likelyTag)][wordIndex+1] = bestProb * .95
 
 				"""
 				if transMatrix[getTagIndex(bestTag)][getTagIndex('nn')] >= .25:  # is it likelly to be a noun
@@ -369,9 +383,15 @@ language.
 returns a pos tag as a string.
 """
 def tagUnknown( word ):
+	# potential issues with number words such as one two twenty
+	# this can be fixed by a larger corpus.
+
 	# does the word contain a number as the first character
 	if word[0] in "0123456789":
 		return 'cd'
+
+	# DESIREBLY THIS IS TAKEN OUT WITH A LARGER CORPUS
+
 
 	# create a temp word that is all lowercase
 	lowerWord = word.lower()
@@ -484,15 +504,27 @@ def readCorpus():
 			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
 			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
 
+	for line in open( "copyrightCorpus3.in" ):
+		line = line.strip()
+		line = line.split()
+		for word in line:
+			word = word.split( '|~|' )
+			currTag = word[1]
+			# add the current word to the unigram dictionary (single word probability)
+			dictionary = incrementUnigramWord( dictionary, word[0], currTag )
+			# add the current tag transition to the transition matrix
+			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
+			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
+
 	dictionary = convertDictionaryToProb( dictionary )
 	transMatrix = convertTransMatrixToProb( transMatrix )
 
 	# this should just be given a sentence will do the probability and only do look ups
 	# it should not infer or have to worry about spliting the sentence and infering
-	taggedSentence = tagSentence( 'This file is part of GnuPG. Copyright 1589, Tad Masters Hunt.', transMatrix, dictionary)
-	print( taggedSentence )
+	#taggedSentence = tagSentence( 'This file is part of GnuPG. Copyright 1589, Tad Masters Hunt.', transMatrix, dictionary)
+	#print( taggedSentence )
 
-	#tagFile( 'rawCopyright2', transMatrix, dictionary )
+	tagFile( 'rawCopyright2', transMatrix, dictionary )
 
 readCorpus()
 
