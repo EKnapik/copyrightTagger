@@ -250,10 +250,16 @@ See above to infer what I want here....
 This converts an transition matrix that is just the summation to its' probability
 counter part. This also like the majority of the above comments might be nice to
 be a private method and should be a real number between: (0,1)
+
+Implementing Smoothing into the algorithm
+this is an overall incerease to allow even words to be considered though highly
+unlikelly so a one is added to each transition and to be consistent the total
+adds the number of tags which is how many 1s are added in each space. An overall incerease
+or bump to all tags.
 """
 def convertTransMatrixToProb( transMatrix ):
 	for row in range( getNumTags() ):        # implied 0
-		total = 0
+		total = getNumTags()                 # this is the base value for the smoothing algorithm
 		for col in range( getNumTags() ):    # implied 0
 			total += transMatrix[row][col]
 		for col in range( getNumTags() ):    # implied 0
@@ -263,7 +269,8 @@ def convertTransMatrixToProb( transMatrix ):
 			# because unlike the dictionary 0s may be inculed so its: 0 / 0 which will crash
 			# careful ^^^^
 			if total != 0:
-				transMatrix[row][col] = float( transMatrix[row][col] ) / float( total )
+				# the one is added as part of the smoothing algorithm
+				transMatrix[row][col] = float( transMatrix[row][col] + 1.0 ) / float( total )
 	return transMatrix
 
 
@@ -304,13 +311,18 @@ def tagSentence( sentence, transMatrix, dictionary ):
 				for tagObject in dictionary[sentence[wordIndex]]:
 					if getTagStr( tagIndex ) == tagObject.tag:
 						sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
-			else: # This is essentially a degenerative pass through. It is .5 essentially a flip of a coin
+			else: # Try to determine the part of speech depending on the word itself
+				likelyTag = tagUnknown( sentence[wordIndex] )
+				sentenceMatrix[getTagIndex(likelyTag)][wordIndex+1] = bestProb
+
+				"""
 				if transMatrix[getTagIndex(bestTag)][getTagIndex('nn')] >= .25:  # is it likelly to be a noun
 					sentenceMatrix[getTagIndex('nn')][wordIndex+1] = .35
 				elif transMatrix[getTagIndex(bestTag)][getTagIndex('np')] >= .25:
 					sentenceMatrix[getTagIndex('np')][wordIndex+1] = .35
 				else:
 					sentenceMatrix[tagIndex][wordIndex+1] = bestProb
+				"""
 	# THE MATRIX IS CREATED.... I Think I am not in the best states of mind while I am writing this
 	# I'll do some checks to see if this works I really don't want to work right now
 	# The operations above are on the order of number of tags squared times the number of words in the sentence
@@ -346,6 +358,66 @@ def tagFile( filename, transMatrix, dictionary ):
 	outSent = tagSentence( inSent, transMatrix, dictionary )
 	outfile = open( (filename + '.out'), 'w' )
 	outfile.write( outSent )
+
+
+
+"""
+given an unknown word tries to identify the pos tag
+based on the contents of the word and know rules about the english
+language.
+
+returns a pos tag as a string.
+"""
+def tagUnknown( word ):
+	# does the word contain a number as the first character
+	if word[0] in "0123456789":
+		return 'cd'
+
+	# create a temp word that is all lowercase
+	lowerWord = word.lower()
+	# check for adjective suffixes
+	if lowerWord.endswith( 'able' ) or lowerWord.endswith( 'ible' ):
+		return 'jj'
+	elif lowerWord.endswith( 'ic' ):
+		return 'jj'
+	elif lowerWord.endswith( 'ous' ):
+		return 'jj'
+	elif lowerWord.endswith( 'al' ):
+		return 'jj'
+	elif lowerWord.endswith( 'ful' ):
+		return 'jj'
+	# check for verb suffixes
+	elif lowerWord.endswith( 'ate' ):
+		return 'vb'
+	elif lowerWord.endswith( 'fy' ):
+		return 'vb'
+	elif lowerWord.endswith( 'ize' ):
+		return 'vb'
+	# check for noun suffixes
+	elif lowerWord.endswith( 'ion' ):
+		return 'nn'
+	elif lowerWord.endswith( 'ness' ):
+		return 'nn'
+	elif lowerWord.endswith( 'er' ) or lowerWord.endswith( 'or' ):
+		return 'nn'
+	elif lowerWord.endswith( 'ist' ):
+		return 'nn'
+	elif lowerWord.endswith( 'ship' ) or lowerWord.endswith( 'hood' ):
+		return 'nn'
+	elif lowerWord.endswith( 'ology' ):
+		return 'nn'
+	elif lowerWord.endswith( 'ty' ) or lowerWord.endswith( 'y' ):
+		return 'nn'
+
+	# if the first letter is capitalized its probably a propper noun
+	# I want to do this check late to not prioritize capitalization
+	if word[0].isupper():
+		return 'np'
+	# if I can not figure it out then its a foreign word.
+	return 'fw'
+
+
+
 
 
 
@@ -417,10 +489,10 @@ def readCorpus():
 
 	# this should just be given a sentence will do the probability and only do look ups
 	# it should not infer or have to worry about spliting the sentence and infering
-	taggedSentence = tagSentence( 'Copyright (C) 2002, 2003, 2005, 2006, 2007, 2008  Free Software Foundation, Inc.', transMatrix, dictionary)
+	taggedSentence = tagSentence( 'This file is part of GnuPG. Copyright 1589, Tad Masters Hunt.', transMatrix, dictionary)
 	print( taggedSentence )
 
-	tagFile( 'rawCopyright2', transMatrix, dictionary )
+	#tagFile( 'rawCopyright2', transMatrix, dictionary )
 
 readCorpus()
 
