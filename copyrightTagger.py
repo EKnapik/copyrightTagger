@@ -396,8 +396,6 @@ def tagUnknown( word ):
 		return 'cd'
 
 	# DESIREBLY THIS IS TAKEN OUT WITH A LARGER CORPUS
-
-
 	# create a temp word that is all lowercase
 	lowerWord = word.lower()
 	# check for adjective suffixes
@@ -411,6 +409,11 @@ def tagUnknown( word ):
 		return 'jj'
 	elif lowerWord.endswith( 'ful' ):
 		return 'jj'
+	elif lowerWord.endswith( 'less' ):
+		return 'jj'
+	# check adverb suffix
+	elif lowerWord.endswith( 'ly' ):
+		return 'rb'
 	# check for verb suffixes
 	elif lowerWord.endswith( 'ate' ):
 		return 'vb'
@@ -421,11 +424,13 @@ def tagUnknown( word ):
 	# check for noun suffixes
 	elif lowerWord.endswith( 'ion' ):
 		return 'nn'
-	elif lowerWord.endswith( 'ness' ):
+	elif lowerWord.endswith( 'ness' ) or lowerWord.endswith( 'ess' ):
+		return 'nn'
+	elif lowerWord.endswith( 'ment' ):
 		return 'nn'
 	elif lowerWord.endswith( 'er' ) or lowerWord.endswith( 'or' ):
 		return 'nn'
-	elif lowerWord.endswith( 'ist' ):
+	elif lowerWord.endswith( 'ist' ) or lowerWord.endswith( 'ism' ):
 		return 'nn'
 	elif lowerWord.endswith( 'ship' ) or lowerWord.endswith( 'hood' ):
 		return 'nn'
@@ -436,7 +441,7 @@ def tagUnknown( word ):
 
 	# if the first letter is capitalized its probably a propper noun
 	# I want to do this check late to not prioritize capitalization
-	if word[0].isupper() and word[1:].islowwer():
+	if word[0].isupper():
 		return 'np'
 	# if I can not figure it out then its a foreign word.
 	return 'fw'
@@ -545,17 +550,27 @@ def readCorpus():
 			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
 			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
 
+	for line in open( "copyrightCorpus6.in" ):
+		line = line.strip()
+		line = line.split()
+		for word in line:
+			word = word.split( '|~|' )
+			currTag = word[1]
+			# add the current word to the unigram dictionary (single word probability)
+			dictionary = incrementUnigramWord( dictionary, word[0], currTag )
+			# add the current tag transition to the transition matrix
+			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
+			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
+
 	dictionary = convertDictionaryToProb( dictionary )
 	transMatrix = convertTransMatrixToProb( transMatrix )
 
 	# this should just be given a sentence will do the probability and only do look ups
 	# it should not infer or have to worry about spliting the sentence and infering
-	#taggedSentence = tagSentence( 'This file is part of GnuPG. Copyright 1589, Tad Masters Hunt.', transMatrix, dictionary)
-	#print( taggedSentence )
+	# taggedSentence = tagSentence( 'This file is part of GnuPG. Copyright 1589, Tad Masters Hunt.', transMatrix, dictionary)
+	# print( taggedSentence )
 
-	print( transMatrix[getTagIndex('cd')][getTagIndex(',')] )
-
-	tagFile( 'rawCopyright', transMatrix, dictionary )
+	tagFile( 'test', transMatrix, dictionary )
 
 readCorpus()
 
