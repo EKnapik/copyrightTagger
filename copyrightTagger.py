@@ -485,7 +485,7 @@ def readCorpus():
 	prevTag = '.'
 	currTag = ''
 
-	for line in open( "copyrightCorpus1.in" ):
+	for line in open( "completeCopyrightCorpus.in" ):
 		line = line.strip()
 		line = line.split()
 		for word in line:
@@ -502,65 +502,6 @@ def readCorpus():
 			# floating point numbers, abbreviated buisnesses will cause problems
 			#if prevTag == '.':
 			#	prevTag = 'bos'
-	for line in open( "copyrightCorpus2.in" ):
-		line = line.strip()
-		line = line.split()
-		for word in line:
-			word = word.split( '|~|' )
-			currTag = word[1]
-			# add the current word to the unigram dictionary (single word probability)
-			dictionary = incrementUnigramWord( dictionary, word[0], currTag )
-			# add the current tag transition to the transition matrix
-			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
-			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
-
-	for line in open( "copyrightCorpus3.in" ):
-		line = line.strip()
-		line = line.split()
-		for word in line:
-			word = word.split( '|~|' )
-			currTag = word[1]
-			# add the current word to the unigram dictionary (single word probability)
-			dictionary = incrementUnigramWord( dictionary, word[0], currTag )
-			# add the current tag transition to the transition matrix
-			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
-			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
-
-	for line in open( "copyrightCorpus4.in" ):
-		line = line.strip()
-		line = line.split()
-		for word in line:
-			word = word.split( '|~|' )
-			currTag = word[1]
-			# add the current word to the unigram dictionary (single word probability)
-			dictionary = incrementUnigramWord( dictionary, word[0], currTag )
-			# add the current tag transition to the transition matrix
-			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
-			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
-
-	for line in open( "copyrightCorpus5.in" ):
-		line = line.strip()
-		line = line.split()
-		for word in line:
-			word = word.split( '|~|' )
-			currTag = word[1]
-			# add the current word to the unigram dictionary (single word probability)
-			dictionary = incrementUnigramWord( dictionary, word[0], currTag )
-			# add the current tag transition to the transition matrix
-			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
-			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
-
-	for line in open( "copyrightCorpus6.in" ):
-		line = line.strip()
-		line = line.split()
-		for word in line:
-			word = word.split( '|~|' )
-			currTag = word[1]
-			# add the current word to the unigram dictionary (single word probability)
-			dictionary = incrementUnigramWord( dictionary, word[0], currTag )
-			# add the current tag transition to the transition matrix
-			transMatrix = incrementTransMatrix( transMatrix, getTagIndex(prevTag), getTagIndex(currTag) )
-			prevTag = currTag     # set the prev tag to the current tag so I can keep track of transitions
 
 	dictionary = convertDictionaryToProb( dictionary )
 	transMatrix = convertTransMatrixToProb( transMatrix )
