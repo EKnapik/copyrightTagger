@@ -1,6 +1,8 @@
 def main():
 
-	string = "copyright|~|nn   2000|~|cd   Steve|~|np   and|~|cc   the|~|dt   Exablox|~|np   co|~|np   .|~|.   "
+	string = "Copyright|~|nn   (|~|(   c|~|nn   )|~|)   2015|~|cd   Harlan|~|np   Haskins|~|np   Permission|~|nn   is|~|vb   hereby|~|rb   granted|~|vb   ,|~|,   free|~|np   of|~|in   charge|~|nn   ,|~|,   to|~|to   any|~|dt   person|~|nn   obtaining|~|vb   a|~|dt   copy|~|nn   of|~|in   this|~|dt   software|~|nn   and|~|cc   associated|~|jj   documentation|~|nn   files|~|nn   (|~|(   the|~|dt   \"|~|\"   Software|~|nn   ,|~|,   to|~|to   deal|~|vb   in|~|in   the|~|dt   Software|~|np   without|~|in   restriction|~|nn   ,|~|,   including|~|vb   without|~|in   limitation|~|nn   the|~|dt   rights|~|nn   to|~|to   use|~|vb   ,|~|,   copy|~|vb   ,|~|,   modify|~|vb   ,|~|,   merge|~|vb   ,|~|,   publish|~|vb   ,|~|,   distribute|~|vb   ,|~|,   sublicense|~|vb   ,|~|,   and|~|cc   /|~|sym   or|~|cc   sell|~|vb   copies|~|nn   of|~|in   the|~|dt   Software|~|np   ,|~|,   and|~|cc   to|~|to   permit|~|vb   persons|~|nn   to|~|to   whom|~|pr   the|~|dt   Software|~|np   is|~|vb   furnished|~|vb   to|~|to   do|~|vb   so|~|rb   ,|~|,   subject|~|vb   to|~|to   the|~|dt   following|~|jj   conditions|~|nn   :|~|:   The|~|dt   above|~|in   copyright|~|nn   notice|~|nn   and|~|cc   this|~|dt   permission|~|nn   notice|~|nn   shall|~|md   be|~|vb   included|~|vb   in|~|in   all|~|md   copies|~|nn   or|~|cc   substantial|~|jj   portions|~|nn   of|~|in   the|~|dt   Software|~|np   .|~|.   THE|~|dt   SOFTWARE|~|nn   IS|~|vb   PROVIDED|~|vb   \"|~|\"   AS|~|rb   IS|~|vb   ,|~|,   WITHOUT|~|in   WARRANTY|~|nn   OF|~|in   ANY|~|dt   KIND|~|nn   ,|~|,   EXPRESS|~|vb   OR|~|cc   IMPLIED|~|vb   ,|~|,   INCLUDING|~|vb   BUT|~|cc   NOT|~|rb   LIMITED|~|jj   TO|~|to   THE|~|dt   WARRANTIES|~|nn   OF|~|in   MERCHANTABILITY|~|nn   ,|~|,   FITNESS|~|nn   FOR|~|in   A|~|dt   PARTICULAR|~|jj   PURPOSE|~|nn   AND|~|cc   NONINFRINGEMENT|~|nn   .|~|.   IN|~|in   NO|~|dt   EVENT|~|nn   SHALL|~|md   THE|~|dt   AUTHORS|~|nn   OR|~|cc   COPYRIGHT|~|nn   HOLDERS|~|nn   BE|~|vb   LIABLE|~|jj   FOR|~|in   ANY|~|dt   CLAIM|~|nn   ,|~|,   DAMAGES|~|nn   OR|~|cc   OTHER|~|jj   LIABILITY|~|nn   ,|~|,   WHETHER|~|in   IN|~|in   AN|~|dt   ACTION|~|nn   OF|~|in   CONTRACT|~|nn   ,|~|,   TORT|~|nn   OR|~|cc   OTHERWISE|~|rb   ,|~|,   ARISING|~|vb   FROM|~|in   ,|~|,   OUT|~|in   OF|~|in   OR|~|cc   IN|~|in   CONNECTION|~|nn   WITH|~|in   THE|~|dt   SOFTWARE|~|nn   OR|~|cc   THE|~|dt   USE|~|nn   OR|~|cc   OTHER|~|jj   DEALINGS|~|nn   IN|~|in   THE|~|dt   SOFTWARE|~|nn   .|~|.   "
+
+
 
 	# expand contractions:
 	string = string.replace("ain't", "are not")
@@ -415,9 +417,7 @@ def compressNP( string ):
 	return finalString
 
 
-#main()
-
-print( compressNP("copyright|~|nn   2000|~|cd   .|~|.   2|~|cd   .|~|.   3|~|cd   .|~|.   Steve|~|np   and|~|cc   3|~|cd   .|~|.   1|~|cd   the|~|dt   Exablox|~|np   co|~|np   .|~|.   .|~|.   2|~|cd   Steve|~|np   and|~|cc   3|~|cd"))
+main()
 
 
 

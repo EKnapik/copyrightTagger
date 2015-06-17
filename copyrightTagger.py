@@ -505,6 +505,7 @@ def readCorpus():
 			#if prevTag == '.':
 			#	prevTag = 'bos'
 
+	#printUnigramDict( dictionary )
 	dictionary = convertDictionaryToProb( dictionary )
 	transMatrix = convertTransMatrixToProb( transMatrix )
 
