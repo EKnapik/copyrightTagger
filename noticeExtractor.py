@@ -379,9 +379,45 @@ def compressNumInString( string ):
 
 
 
+"""
+Given a string this will compress propper nouns and periods into a single tag
+that is a propper noun
+"""
+def compressNP( string ):
+	finalString = ''
+	# assuming this is a valid string that this function can take
+	string = string.strip()
+	string = string.split()
+	# string should now be a list of word|~|tag strings.
+
+	prevTag = ''
+
+	for word in string:
+		word = word.strip()
+		word = word.split('|~|')
+
+		if prevTag == 'np' and word[0] == '.':
+			finalString = finalString + '.|~|np   '
+		elif prevTag == 'np' and word[1] == 'np':
+			finalString = finalString + '|~|np   ' + word[0]
+		elif prevTag == 'np' and word[0] != '.':
+			finalString = finalString + '|~|np   ' + word[0] + '|~|' + word[1] + '   '
+		elif word[1] == 'np':
+			finalString = finalString + word[0]
+		else:
+			finalString = finalString + word[0] + '|~|' + word[1] + '   '
+
+		prevTag = word[1]
+
+	if prevTag == 'np':
+		finalString = finalString + '|~|np   '
+
+	return finalString
+
+
 #main()
 
-print( compressNumInString("copyright|~|nn   2000|~|cd   .|~|.   2|~|cd   .|~|.   3|~|cd   .|~|.   Steve|~|np   and|~|cc   3|~|cd   .|~|.   1|~|cd   the|~|dt   Exablox|~|np   co|~|np   3|~|cd   .|~|.   "))
+print( compressNP("copyright|~|nn   2000|~|cd   .|~|.   2|~|cd   .|~|.   3|~|cd   .|~|.   Steve|~|np   and|~|cc   3|~|cd   .|~|.   1|~|cd   the|~|dt   Exablox|~|np   co|~|np   .|~|.   .|~|.   2|~|cd   Steve|~|np   and|~|cc   3|~|cd"))
 
 
 
