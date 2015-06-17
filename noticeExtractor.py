@@ -255,8 +255,6 @@ def newExtractNotice( states, symbols, DFA, string ):
 	string = string.split()
 	# string should now be a list of word|~|tag strings.
 
-	#currentIndex = 0
-	#lastIndex = len( string ) # this makes the while statement a lookup rather than a compute each time
 	currentState = 11          # initialize my state machine
 	potentialNotice = ''      # initalize my notice outside of the loop
 	for word in string:
@@ -294,7 +292,96 @@ def newExtractNotice( states, symbols, DFA, string ):
 	return extractedNotice
 
 
-main()
+
+
+"""
+DFA required for the compression of numbers in a string
+"""
+def mkNumCompressDFA():
+	states = [0, 1, 2, 3]
+	symbols = [ 'cd', '.']
+
+	DFA = dict()
+	DFA[(0, 'X', 'cd')] = 0
+	DFA[(1, 'X', 'cd')] = 3
+	DFA[(2, 'X', 'cd')] = 0
+	DFA[(3, 'X', 'cd')] = 0
+
+	DFA[(0, '.', '.')] = 1
+	DFA[(1, '.', '.')] = 2
+	DFA[(2, '.', '.')] = 2
+	DFA[(3, '.', '.')] = 2
+
+	DFA[(0, '?', '.')] = 2
+	DFA[(1, '?', '.')] = 2
+	DFA[(2, '?', '.')] = 2
+	DFA[(3, '?', '.')] = 2
+
+	DFA[(0, '!', '.')] = 2
+	DFA[(1, '!', '.')] = 2
+	DFA[(2, '!', '.')] = 2
+	DFA[(3, '!', '.')] = 2
+
+	DFA[(0, 'X', 'X')] = 2
+	DFA[(1, 'X', 'X')] = 2
+	DFA[(2, 'X', 'X')] = 2
+	DFA[(3, 'X', 'X')] = 2
+
+	return states, symbols, DFA
+
+"""
+Given a string this will compress floating point numnbers
+or numbers that contain a decimal point
+"""
+def compressNumInString( string ):
+	states, symbols, DFA = mkNumCompressDFA()
+
+	finalString = ''
+	# assuming this is a valid string that this function can take
+	string = string.strip()
+	string = string.split()
+	# string should now be a list of word|~|tag strings.
+
+	currentState = 2          # initialize my state machine
+	compNum = ''      # initalize my notice outside of the loop
+	saveNum = ''
+	for word in string:
+		word = word.strip()
+		word = word.split('|~|')
+
+		if word[1] == '.':
+			currentState = DFA[(currentState, word[0], word[1])]
+		elif word[1] == 'cd':
+			currentState = DFA[(currentState, 'X', word[1])]
+		else:
+			currentState = DFA[(currentState, 'X', 'X')]
+
+		if currentState == 0:
+			finalString = finalString + saveNum
+			compNum = word[0]
+			saveNum = word[0] + '|~|' + word[1] + '   '
+		elif currentState == 1:
+			compNum = compNum + '.'
+			saveNum = saveNum + word[0] + '|~|' + word[1] + '   '
+		elif currentState == 2:
+			finalString = finalString + saveNum
+			saveNum = ''
+			finalString = finalString + word[0] + '|~|' + word[1] + '   '
+		elif currentState == 3:
+			compNum = compNum + word[0]
+			saveNum = compNum + '|~|cd   '
+			currentState = 0
+
+	if currentState != 2:
+		finalString = finalString + saveNum
+
+	return finalString
+
+
+
+#main()
+
+print( compressNumInString("copyright|~|nn   2000|~|cd   .|~|.   2|~|cd   .|~|.   3|~|cd   .|~|.   Steve|~|np   and|~|cc   3|~|cd   .|~|.   1|~|cd   the|~|dt   Exablox|~|np   co|~|np   3|~|cd   .|~|.   "))
 
 
 
