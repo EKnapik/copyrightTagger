@@ -421,7 +421,12 @@ def tagUnknown( word ):
 		return 'vb'
 	elif lowerWord.endswith( 'ize' ):
 		return 'vb'
+
 	# check for noun suffixes
+	# if the first letter is capitalized its probably a propper noun
+	# I want to do this check late to not prioritize capitalization
+	if word[0].isupper():
+		return 'np'
 	elif lowerWord.endswith( 'ion' ):
 		return 'nn'
 	elif lowerWord.endswith( 'ness' ) or lowerWord.endswith( 'ess' ):
@@ -439,10 +444,7 @@ def tagUnknown( word ):
 	elif lowerWord.endswith( 'ty' ) or lowerWord.endswith( 'y' ):
 		return 'nn'
 
-	# if the first letter is capitalized its probably a propper noun
-	# I want to do this check late to not prioritize capitalization
-	if word[0].isupper():
-		return 'np'
+
 	# if I can not figure it out then its a foreign word.
 	return 'fw'
 
@@ -510,6 +512,7 @@ def readCorpus():
 	# it should not infer or have to worry about spliting the sentence and infering
 	# taggedSentence = tagSentence( 'This file is part of GnuPG. Copyright 1589, Tad Masters Hunt.', transMatrix, dictionary)
 	# print( taggedSentence )
+
 
 	tagFile( 'test', transMatrix, dictionary )
 
