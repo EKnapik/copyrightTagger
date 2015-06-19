@@ -288,8 +288,10 @@ or an array of char*
 def tagSentence( sentence, transMatrix, dictionary ):
 	sentence = sentence.strip()
 	
-	sentence = re.sub("([.,!\[\]</\\>|;\"\':()*`~+=\-_@#$%^&?])+", r" \1 ", sentence) # regex to add needed spaces
+	sentence = re.sub("([]()[{}\.,![\]\<\/\\\>\|;\"\':\}{(\)\*`~\+\=\-_@#$%&\^\?])", r" \1 ", sentence) # regex to add needed spaces
+
 	sentence = sentence.split()
+	
 
 	sentLength = len( sentence ) + 1       # I need one for the base beginning of sentence part
 	sentenceMatrix = [[0 for x in range(sentLength)] for x in range(getNumTags())]
@@ -342,8 +344,7 @@ def tagSentence( sentence, transMatrix, dictionary ):
 				else:
 					sentenceMatrix[tagIndex][wordIndex+1] = bestProb
 				"""
-	# THE MATRIX IS CREATED.... I Think I am not in the best states of mind while I am writing this
-	# I'll do some checks to see if this works I really don't want to work right now
+	# THE MATRIX IS CREATED.... I Think 
 	# The operations above are on the order of number of tags squared times the number of words in the sentence
 	# less than N cubbed but not by much and very memory inefficient lots of null places or 0s in the matrix
 

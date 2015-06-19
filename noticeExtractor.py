@@ -1,7 +1,7 @@
 def main():
 
-	string = "Copyright|~|nn   (|~|(   c|~|nn   )|~|)   2015|~|cd   Harlan|~|np   Haskins|~|np   Permission|~|nn   is|~|vb   hereby|~|rb   granted|~|vb   ,|~|,   free|~|np   of|~|in   charge|~|nn   ,|~|,   to|~|to   any|~|dt   person|~|nn   obtaining|~|vb   a|~|dt   copy|~|nn   of|~|in   this|~|dt   software|~|nn   and|~|cc   associated|~|jj   documentation|~|nn   files|~|nn   (|~|(   the|~|dt   \"|~|\"   Software|~|nn   ,|~|,   to|~|to   deal|~|vb   in|~|in   the|~|dt   Software|~|np   without|~|in   restriction|~|nn   ,|~|,   including|~|vb   without|~|in   limitation|~|nn   the|~|dt   rights|~|nn   to|~|to   use|~|vb   ,|~|,   copy|~|vb   ,|~|,   modify|~|vb   ,|~|,   merge|~|vb   ,|~|,   publish|~|vb   ,|~|,   distribute|~|vb   ,|~|,   sublicense|~|vb   ,|~|,   and|~|cc   /|~|sym   or|~|cc   sell|~|vb   copies|~|nn   of|~|in   the|~|dt   Software|~|np   ,|~|,   and|~|cc   to|~|to   permit|~|vb   persons|~|nn   to|~|to   whom|~|pr   the|~|dt   Software|~|np   is|~|vb   furnished|~|vb   to|~|to   do|~|vb   so|~|rb   ,|~|,   subject|~|vb   to|~|to   the|~|dt   following|~|jj   conditions|~|nn   :|~|:   The|~|dt   above|~|in   copyright|~|nn   notice|~|nn   and|~|cc   this|~|dt   permission|~|nn   notice|~|nn   shall|~|md   be|~|vb   included|~|vb   in|~|in   all|~|md   copies|~|nn   or|~|cc   substantial|~|jj   portions|~|nn   of|~|in   the|~|dt   Software|~|np   .|~|.   THE|~|dt   SOFTWARE|~|nn   IS|~|vb   PROVIDED|~|vb   \"|~|\"   AS|~|rb   IS|~|vb   ,|~|,   WITHOUT|~|in   WARRANTY|~|nn   OF|~|in   ANY|~|dt   KIND|~|nn   ,|~|,   EXPRESS|~|vb   OR|~|cc   IMPLIED|~|vb   ,|~|,   INCLUDING|~|vb   BUT|~|cc   NOT|~|rb   LIMITED|~|jj   TO|~|to   THE|~|dt   WARRANTIES|~|nn   OF|~|in   MERCHANTABILITY|~|nn   ,|~|,   FITNESS|~|nn   FOR|~|in   A|~|dt   PARTICULAR|~|jj   PURPOSE|~|nn   AND|~|cc   NONINFRINGEMENT|~|nn   .|~|.   IN|~|in   NO|~|dt   EVENT|~|nn   SHALL|~|md   THE|~|dt   AUTHORS|~|nn   OR|~|cc   COPYRIGHT|~|nn   HOLDERS|~|nn   BE|~|vb   LIABLE|~|jj   FOR|~|in   ANY|~|dt   CLAIM|~|nn   ,|~|,   DAMAGES|~|nn   OR|~|cc   OTHER|~|jj   LIABILITY|~|nn   ,|~|,   WHETHER|~|in   IN|~|in   AN|~|dt   ACTION|~|nn   OF|~|in   CONTRACT|~|nn   ,|~|,   TORT|~|nn   OR|~|cc   OTHERWISE|~|rb   ,|~|,   ARISING|~|vb   FROM|~|in   ,|~|,   OUT|~|in   OF|~|in   OR|~|cc   IN|~|in   CONNECTION|~|nn   WITH|~|in   THE|~|dt   SOFTWARE|~|nn   OR|~|cc   THE|~|dt   USE|~|nn   OR|~|cc   OTHER|~|jj   DEALINGS|~|nn   IN|~|in   THE|~|dt   SOFTWARE|~|nn   .|~|.   "
-
+	string = "Copyright|~|nn   (|~|(   c|~|nn   )|~|)   1992|~|cd   ,|~|,   1993|~|cd   Regents|~|np   of|~|in   the|~|dt   University|~|np   of|~|in   California|~|np   .|~|.   All|~|md   rights|~|nn   reserved|~|vb   .|~|.   *|~|sym   "
+	
 
 
 	# expand contractions:
@@ -17,9 +17,10 @@ def main():
 	# Need to perform the compression of number . number
 	# Need to perform the compression of propperNoun .
 	# NEED TO REMOVE OR SOMEHOW HANDLE NON-ASCII CHARACTERS <- IF THIS OCCURS NON GRACEFUL FAILURE
+	string = compressNP( string )
+	string = newExtractNotice( string )
 
-	states, symbols, newDFA = mkNewDFA()
-	print( newExtractNotice(states, symbols, newDFA, string) )
+	print( string )
 
 
 
@@ -61,35 +62,35 @@ def mkNewDFA():
 	DFA[(12, 'c', 'nn')] = 11
 	DFA[(13, 'c', 'nn')] = 11
 
-	DFA[(0, '(', '(')] = 1
-	DFA[(1, '(', '(')] = 11
-	DFA[(2, '(', '(')] = 11
-	DFA[(3, '(', '(')] = 11
-	DFA[(4, '(', '(')] = 11
-	DFA[(5, '(', '(')] = 11
-	DFA[(6, '(', '(')] = 11
-	DFA[(7, '(', '(')] = 11
-	DFA[(8, '(', '(')] = 11
-	DFA[(9, '(', '(')] = 11
-	DFA[(10, '(', '(')] = 11
-	DFA[(11, '(', '(')] = 11
-	DFA[(12, '(', '(')] = 11
-	DFA[(13, '(', '(')] = 11
+	DFA[(0, 'X', '(')] = 1
+	DFA[(1, 'X', '(')] = 11
+	DFA[(2, 'X', '(')] = 11
+	DFA[(3, 'X', '(')] = 11
+	DFA[(4, 'X', '(')] = 11
+	DFA[(5, 'X', '(')] = 11
+	DFA[(6, 'X', '(')] = 11
+	DFA[(7, 'X', '(')] = 11
+	DFA[(8, 'X', '(')] = 11
+	DFA[(9, 'X', '(')] = 11
+	DFA[(10, 'X', '(')] = 11
+	DFA[(11, 'X', '(')] = 11
+	DFA[(12, 'X', '(')] = 11
+	DFA[(13, 'X', '(')] = 11
 
-	DFA[(0, ')', ')')] = 11
-	DFA[(1, ')', ')')] = 11
-	DFA[(2, ')', ')')] = 3
-	DFA[(3, ')', ')')] = 11
-	DFA[(4, ')', ')')] = 11
-	DFA[(5, ')', ')')] = 11
-	DFA[(6, ')', ')')] = 11
-	DFA[(7, ')', ')')] = 11
-	DFA[(8, ')', ')')] = 11
-	DFA[(9, ')', ')')] = 11
-	DFA[(10, ')', ')')] = 11
-	DFA[(11, ')', ')')] = 11
-	DFA[(12, ')', ')')] = 3
-	DFA[(13, ')', ')')] = 11
+	DFA[(0, 'X', ')')] = 11
+	DFA[(1, 'X', ')')] = 3
+	DFA[(2, 'X', ')')] = 3
+	DFA[(3, 'X', ')')] = 11
+	DFA[(4, 'X', ')')] = 11
+	DFA[(5, 'X', ')')] = 11
+	DFA[(6, 'X', ')')] = 11
+	DFA[(7, 'X', ')')] = 11
+	DFA[(8, 'X', ')')] = 11
+	DFA[(9, 'X', ')')] = 11
+	DFA[(10, 'X', ')')] = 11
+	DFA[(11, 'X', ')')] = 11
+	DFA[(12, 'X', ')')] = 3
+	DFA[(13, 'X', ')')] = 11
 
 	DFA[(0, 'X', 'cd')] = 6
 	DFA[(1, 'X', 'cd')] = 11
@@ -101,7 +102,7 @@ def mkNewDFA():
 	DFA[(7, 'X', 'cd')] = 6
 	DFA[(8, 'X', 'cd')] = 11
 	DFA[(9, 'X', 'cd')] = 11
-	DFA[(10, 'X', 'cd')] = 11
+	DFA[(10, 'X', 'cd')] = 10
 	DFA[(11, 'X', 'cd')] = 11
 	DFA[(12, 'X', 'cd')] = 6
 	DFA[(13, 'X', 'cd')] = 6
@@ -116,7 +117,7 @@ def mkNewDFA():
 	DFA[(7, 'X', 'np')] = 4
 	DFA[(8, 'X', 'np')] = 4
 	DFA[(9, 'X', 'np')] = 4
-	DFA[(10, 'X', 'np')] = 11
+	DFA[(10, 'X', 'np')] = 10
 	DFA[(11, 'X', 'np')] = 11
 	DFA[(12, 'X', 'np')] = 4
 	DFA[(13, 'X', 'np')] = 4
@@ -142,7 +143,7 @@ def mkNewDFA():
 	DFA[(3, 'X', 'in')] = 11
 	DFA[(4, 'X', 'in')] = 8
 	DFA[(5, 'X', 'in')] = 11
-	DFA[(6, 'X', 'in')] = 11
+	DFA[(6, 'X', 'in')] = 8
 	DFA[(7, 'X', 'in')] = 11
 	DFA[(8, 'X', 'in')] = 11
 	DFA[(9, 'X', 'in')] = 11
@@ -166,20 +167,20 @@ def mkNewDFA():
 	DFA[(12, 'X', '--')] = 11
 	DFA[(13, 'X', '--')] = 11
 
-	DFA[(0, ',', ',')] = 11
-	DFA[(1, ',', ',')] = 11
-	DFA[(2, ',', ',')] = 11
-	DFA[(3, ',', ',')] = 11
-	DFA[(4, ',', ',')] = 5
-	DFA[(5, ',', ',')] = 11
-	DFA[(6, ',', ',')] = 5
-	DFA[(7, ',', ',')] = 11
-	DFA[(8, ',', ',')] = 11
-	DFA[(9, ',', ',')] = 11
-	DFA[(10, ',', ',')] = 11
-	DFA[(11, ',', ',')] = 11
-	DFA[(12, ',', ',')] = 11
-	DFA[(13, ',', ',')] = 11
+	DFA[(0, 'X', ',')] = 11
+	DFA[(1, 'X', ',')] = 11
+	DFA[(2, 'X', ',')] = 11
+	DFA[(3, 'X', ',')] = 11
+	DFA[(4, 'X', ',')] = 5
+	DFA[(5, 'X', ',')] = 11
+	DFA[(6, 'X', ',')] = 5
+	DFA[(7, 'X', ',')] = 11
+	DFA[(8, 'X', ',')] = 11
+	DFA[(9, 'X', ',')] = 11
+	DFA[(10, 'X', ',')] = 11
+	DFA[(11, 'X', ',')] = 11
+	DFA[(12, 'X', ',')] = 11
+	DFA[(13, 'X', ',')] = 11
 
 	DFA[(0, 'X', '.')] = 11
 	DFA[(1, 'X', '.')] = 11
@@ -200,7 +201,7 @@ def mkNewDFA():
 	DFA[(1, 'X', 'sym')] = 12
 	DFA[(2, 'X', 'sym')] = 11
 	DFA[(3, 'X', 'sym')] = 11
-	DFA[(4, 'X', 'sym')] = 11
+	DFA[(4, 'X', 'sym')] = 10
 	DFA[(5, 'X', 'sym')] = 11
 	DFA[(6, 'X', 'sym')] = 11
 	DFA[(7, 'X', 'sym')] = 11
@@ -250,7 +251,9 @@ Given a DFA and a tagged string with the delimeter |~| this will
 extract the copyright notice if it exists in the given string. returns the
 string of a copyright notice(s) or None.
 """
-def newExtractNotice( states, symbols, DFA, string ):
+def newExtractNotice( string ):
+	states, symbols, DFA = mkNewDFA()
+
 	extractedNotice = ''
 	# assuming this is a valid string that this function can take
 	string = string.strip()
@@ -270,7 +273,7 @@ def newExtractNotice( states, symbols, DFA, string ):
 			extractedNotice = extractedNotice + potentialNotice + '\n'
 			potentialNotice = ''
 
-		if currentWord.lower() in symbols and currentTag != '.' and currentTag != 'in':
+		if currentWord.lower() == 'copyright' or currentWord.lower() == 'c':
 			currentState = DFA[(currentState, currentWord.lower(), currentTag)]
 		elif currentTag in symbols:
 			currentState = DFA[(currentState, 'X', currentTag)]
@@ -291,7 +294,9 @@ def newExtractNotice( states, symbols, DFA, string ):
 	if currentState == 10 or currentState == 6 or currentState == 4:
 		extractedNotice = extractedNotice + potentialNotice + '\n'
 
-	return extractedNotice
+	if extractedNotice != '':
+		return extractedNotice
+	return 'No notice could be found.'
 
 
 
