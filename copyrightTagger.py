@@ -298,19 +298,17 @@ def tagSentence( sentence, transMatrix, dictionary ):
 	# above is the sentence array initialization
 
 	# Initialize the first
+	lastBestProb = 1.0
+	lastBestTag = getTagIndex('.')
+	currBestProb = 0.0
+	currBestTag = 0
+
 	sentenceMatrix[getTagIndex('.')][0] = 1.0     # the max probablity something can be
 	for wordIndex in range( len( sentence ) ):
 		for tagIndex in range( getNumTags() ):
-			bestProb = 0.0
-			bestTag = '.'
-			bestTrans = 0.0
-			for someTagIndex in range( getNumTags() ):
-				# the probability of the previous * the transition from previoius to current
-				possibleMaxProb = sentenceMatrix[someTagIndex][wordIndex] * transMatrix[someTagIndex][tagIndex]
-				if possibleMaxProb > bestProb:
-					bestProb = possibleMaxProb
-					bestTag = getTagStr( someTagIndex )
-					bestTrans = transMatrix[someTagIndex][tagIndex]
+			currTrans = transMatrix[lastBestTag][tagIndex]
+			currProb = lastBestProb * currTrans
+
 			if sentence[wordIndex] in dictionary.keys():   # word has been seen before.
 				# with large sentences the potential proability drops to 0 over because of the
 				# transitional algorithm I need to boost the signal every time the sentence ends
@@ -320,31 +318,29 @@ def tagSentence( sentence, transMatrix, dictionary ):
 				else:
 					for tagObject in dictionary[sentence[wordIndex]]:
 						if getTagStr( tagIndex ) == tagObject.tag:
-							sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
+							sentenceMatrix[tagIndex][wordIndex+1] = currProb * tagObject.frequency
 			# perform a check not caring about the capitalization
 			elif sentence[wordIndex].lower() in dictionary.keys():
 				for tagObject in dictionary[sentence[wordIndex].lower()]:
 						if getTagStr( tagIndex ) == tagObject.tag:
-							sentenceMatrix[tagIndex][wordIndex+1] = bestProb * tagObject.frequency
+							sentenceMatrix[tagIndex][wordIndex+1] = currProb * tagObject.frequency
 			else: # Try to determine the part of speech depending on the word itself
 				# if I am 70% sure of a pos based on transition use that transition else use
 				# the rule based one. I might be able to increase that transition with a
 				# larger corpus
-				if bestTrans >= 0.7:
-					sentenceMatrix[tagIndex][wordIndex+1] = bestProb
+				if currTrans >= 0.7:
+					sentenceMatrix[tagIndex][wordIndex+1] = currProb
 				else:
 					likelyTag = tagUnknown( sentence[wordIndex] )
-					sentenceMatrix[getTagIndex(likelyTag)][wordIndex+1] = bestProb * 0.95
+					sentenceMatrix[getTagIndex(likelyTag)][wordIndex+1] = currProb * 0.95
+			# See if this is the best transition
+			if currProb > currBestProb:
+				currBestProb = currProb
+				currBestTag = tagIndex
+		lastBestProb = currBestProb
+		lastBestTag = currBestTag
 
-				"""
-				if transMatrix[getTagIndex(bestTag)][getTagIndex('nn')] >= .25:  # is it likelly to be a noun
-					sentenceMatrix[getTagIndex('nn')][wordIndex+1] = .35
-				elif transMatrix[getTagIndex(bestTag)][getTagIndex('np')] >= .25:
-					sentenceMatrix[getTagIndex('np')][wordIndex+1] = .35
-				else:
-					sentenceMatrix[tagIndex][wordIndex+1] = bestProb
-				"""
-	# THE MATRIX IS CREATED.... I Think 
+	# THE MATRIX IS CREATED.... I Think  a
 	# The operations above are on the order of number of tags squared times the number of words in the sentence
 	# less than N cubbed but not by much and very memory inefficient lots of null places or 0s in the matrix
 
@@ -514,7 +510,6 @@ def readCorpus():
 	# it should not infer or have to worry about spliting the sentence and infering
 	# taggedSentence = tagSentence( 'This file is part of GnuPG. Copyright 1589, Tad Masters Hunt.', transMatrix, dictionary)
 	# print( taggedSentence )
-
 
 	tagFile( 'test', transMatrix, dictionary )
 
