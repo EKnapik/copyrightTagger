@@ -447,7 +447,12 @@ def tagUnknown( word ):
 
 
 
+class Word():
+	__slots__ = ('word', 'num')
 
+	def __init__(self, word, num):
+		self.word = word
+		self.num = num
 
 
 """
@@ -484,7 +489,7 @@ def readCorpus():
 	prevTag = '.'
 	currTag = ''
 
-	for line in open( "completeCopyrightCorpus.in" ):
+	for line in open( "CopyrightCorpus.in" ):
 		line = line.strip()
 		line = line.split()
 		for word in line:
@@ -503,9 +508,26 @@ def readCorpus():
 			#	prevTag = 'bos'
 
 	#printUnigramDict( dictionary )
+	orderedWords = []
+	for word in dictionary.keys():
+		wordCount = Word(word, 0)
+		for tagObject in dictionary[word]:
+			wordCount.num = wordCount.num + tagObject.frequency
+		orderedWords.append( wordCount )
+
+	# sort the list on a lambda function
+	orderedWords.sort(key=lambda x: x.num, reverse=True)
+	for string in orderedWords:
+		print( string.word, string.num )
+
+	print(len(orderedWords))
+
+
 	dictionary = convertDictionaryToProb( dictionary )
 	transMatrix = convertTransMatrixToProb( transMatrix )
 
+	printUnigramDict( dictionary )
+	
 	# this should just be given a sentence will do the probability and only do look ups
 	# it should not infer or have to worry about spliting the sentence and infering
 	# taggedSentence = tagSentence( 'This file is part of GnuPG. Copyright 1589, Tad Masters Hunt.', transMatrix, dictionary)
